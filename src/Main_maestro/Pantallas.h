@@ -99,6 +99,8 @@ void pantalla_inicio(){
   display.setCursor(0, 10);     // Start at top-left corner
   display.print("Estado del sistema");
 
+  display.display(); // Update screen with each newly-drawn line
+
   display.setTextSize(2);       // Normal 2:1 pixel scale
   display.setCursor(0, 30);     // Start at top-left corner
   display.print("Esperando");
@@ -161,7 +163,5 @@ void pantalla_clave(){
   display.print("3");
   display.setCursor(92, 18);     // Start at top-left corner
   display.print("4");
-
-  //display.display(); // Update screen with each newly-drawn line
 }
 
