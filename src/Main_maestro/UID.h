@@ -3,7 +3,7 @@
 #include <MFRC522.h>
 
 #define SS_PIN  5  // ESP32 pin GPIO5 
-#define RST_PIN 4  // ESP32 pin GPIO27 
+#define RST_PIN 4  // ESP32 pin GPIO4
 
 MFRC522 rfid(SS_PIN, RST_PIN);
 

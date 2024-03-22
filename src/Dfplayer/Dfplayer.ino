@@ -1,16 +1,15 @@
 #include <Arduino.h>
 
 ////Librerias dfplayer////
-#include "DFRobotDFPlayerMini.h"
 #include "Alarma.h"
 
-////Instanciar dfplayer////
+////Instancias dfplayer////
 int activa = 0;
 
 void setup(){
   Serial.begin(115200);
 
-  ////Configurar dfplayer////
+////Configurar dfplayer////
   Config_alarma();
 }
 
@@ -24,8 +23,8 @@ void loop(){
     Bucle_alarma();
   }
 
+  delay(10000);
   Desactivar_alarma();
   activa = 0;
   delay(10000);
-  */
 }
