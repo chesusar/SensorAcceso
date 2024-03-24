@@ -27,6 +27,8 @@ String pin = "" ;
 String pin_correcto = "9876";
 
 ////Instancias comunicacion////
+uint8_t hostAddress[] = {0xF0, 0x08, 0xD1, 0xD8, 0x1C, 0x18};
+uint8_t slaveAddress[] = {0xF0, 0x08, 0xD1, 0xD8, 0x1C, 0x18};
 int recibido = 0;
 
 ////Estados////

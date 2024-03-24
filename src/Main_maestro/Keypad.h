@@ -1,3 +1,6 @@
+#ifndef INPUT_H
+#define INPUT_H
+
 #include <stdint.h>
 
 #define KEY_NULL (char)'\0'
@@ -8,6 +11,11 @@ static char keys[] = "123A456B789C*0#D";
 uint8_t rowPins[] = {25, 33, 32, 35};
 uint8_t columnPins[] = {12, 14, 27, 26};
 
+/**
+ * @brief inits input on selected pins
+ * @param columnPins column output pins
+ * @param rowPins row input pins
+ */
 void Config_keypad(uint8_t *columnPins, uint8_t *rowPins){
   memcpy(columns, columnPins, 4);
   memcpy(rows, rowPins, 4);
@@ -21,6 +29,10 @@ void Config_keypad(uint8_t *columnPins, uint8_t *rowPins){
   }
 }
 
+/**
+ * @brief gets last unique char or KEY_NULL
+ * @return last char or KEY_NULL
+ */
 char input_getChar(){
   static char oldKey = KEY_NULL;
   char key = KEY_NULL;
@@ -49,3 +61,5 @@ char input_getChar(){
     return key;
   }
 }
+
+#endif
