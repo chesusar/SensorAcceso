@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
-#include "communication.h"
-#include "input.h"
+#include "communication/communication.h"
+#include "input/input.h"
 
 // Slave COM5
 // Host COM14
