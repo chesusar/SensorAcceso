@@ -11,14 +11,20 @@ void setup() {
   Serial.println("Iniciando wifi");
   Serial.println(WiFi.macAddress());
 
-  communication_init()
-
   //communication_init(NULL);         // Alarma COM 11
   communication_init(slaveAddress); // Sensores COM 14
 }
 
 void loop() {
   if (!communication_isHost()){
+    /*
+    if(onReceived()){
+      Serial.println("prueba 1");
+    }
+    */
+    if(esp_now_register_recv_cb(onReceived)){
+      Serial.println("prueba 2");
+    }
     return;
   }
 
