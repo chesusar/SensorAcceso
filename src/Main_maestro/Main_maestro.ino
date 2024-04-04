@@ -35,11 +35,13 @@ int recibido = 0;
 ////Instancias comunicacion////
 int tiempo1 = 0;
 int tiempo2 = 0;
+int tiempo3 = 0;
+int tiempo4 = 0;
 
 ////Estados////
 int estado = 0;
 int inicio = 0;
-int espera = 1;
+int espera1 = 1;
 int pin_error1 = 2;
 int alerta = 3;
 int clave = 4;
@@ -48,9 +50,10 @@ int desbloqueo = 6;
 int desactivado = 7;
 int activacion = 8;
 int pin_error3 = 9;
+int espera2 = 10;
 
-int tiempo3 = 0;  // borrar en la version final
-int tiempo4 = 0;  // borrar en la version final
+int tiempo5 = 0;  // borrar en la version final
+int tiempo6 = 0;  // borrar en la version final
 
 void setup(){
   Serial.begin(115200);
@@ -68,27 +71,27 @@ void setup(){
   communication_init(NULL);
 
 
-  tiempo3 = millis(); // borrar en la version final
+  tiempo5 = millis(); // borrar en la version final
 }
 
 void loop(){
 
   if(estado == inicio){
     pantalla_inicio();
-    tiempo4 = millis(); // borrar en la version final
+    tiempo6 = millis(); // borrar en la version final
 
     
-    if((tiempo4 - tiempo3) > 10000){  // poner recibir mensaje alerta // quitar calculo de tiempo
+    if((tiempo6 - tiempo5) > 10000){  // poner recibir mensaje alerta // quitar calculo de tiempo
       recibido = 1;
     }
     
     if(recibido == 1){  // plantearse quitarlo
       tiempo1 = millis();
-      estado = espera;
+      estado = espera1;
     }
   }
 
-  if(estado == espera){
+  if(estado == espera1){
     pantalla_clave();
 
     char input = input_getChar();
@@ -135,7 +138,7 @@ void loop(){
   if(estado == pin_error1){
     pantalla_pin_error();
     delay(1500);
-    estado = espera;
+    estado = espera1;
   }
 
   if(estado == alerta){
@@ -241,7 +244,7 @@ void loop(){
     UID = leer_UID();
 
     if(UID == UID_valido){
-      estado = inicio;
+      estado = espera2;
     }
   }
 
@@ -261,7 +264,7 @@ void loop(){
     else if(input == '#'){
       if(pin == pin_correcto){
         pin = "";
-        estado = inicio;
+        estado = espera2;
       }
 
       else{
@@ -286,5 +289,14 @@ void loop(){
     pantalla_pin_error();
     delay(1500);
     estado = activacion;
+  }
+
+  if(estado == espera2){
+    tiempo6 = millis();
+    pantalla_activando();
+    
+    if((tiempo4 - tiempo3) > 60000){
+      estado = inicio;
+    }
   }
 }
