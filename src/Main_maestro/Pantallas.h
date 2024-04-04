@@ -165,3 +165,16 @@ void pantalla_clave(){
   display.print("4");
 }
 
+void pantalla_desactivada(){
+  display.clearDisplay();       // Clear display buffer
+
+  display.setTextSize(3);       // Normal 1:1 pixel scale
+  display.setCursor(10, 5);     // Start at top-left corner
+  display.print("ALARMA");
+
+  display.setTextSize(2);       // Normal 2:1 pixel scale
+  display.setCursor(10, 35);     // Start at top-left corner
+  display.print("Desactivada");
+
+  display.display(); // Update screen with each newly-drawn line
+}

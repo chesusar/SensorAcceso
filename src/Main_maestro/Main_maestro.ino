@@ -32,16 +32,25 @@ String pin_correcto = "9876";
 ////Instancias comunicacion////
 int recibido = 0;
 
+////Instancias comunicacion////
+int tiempo1 = 0;
+int tiempo2 = 0;
+
 ////Estados////
 int estado = 0;
 int inicio = 0;
-int alerta = 1;
-int clave = 2;
-int pin_error = 3;
-int desbloqueo = 4;
+int espera = 1;
+int pin_error1 = 2;
+int alerta = 3;
+int clave = 4;
+int pin_error2 = 5;
+int desbloqueo = 6;
+int desactivado = 7;
+int activacion = 8;
+int pin_error3 = 9;
 
-int tiempo1 = 0;  // borrar en la version final
-int tiempo2 = 0;  // borrar en la version final
+int tiempo3 = 0;  // borrar en la version final
+int tiempo4 = 0;  // borrar en la version final
 
 void setup(){
   Serial.begin(115200);
@@ -59,23 +68,74 @@ void setup(){
   communication_init(NULL);
 
 
-  tiempo1 = millis(); // borrar en la version final
+  tiempo3 = millis(); // borrar en la version final
 }
 
 void loop(){
 
   if(estado == inicio){
     pantalla_inicio();
-    tiempo2 = millis(); // borrar en la version final
+    tiempo4 = millis(); // borrar en la version final
 
     
-    if((tiempo2 - tiempo1) > 10000){  // poner recibir mensaje alerta // quitar calculo de tiempo
+    if((tiempo4 - tiempo3) > 10000){  // poner recibir mensaje alerta // quitar calculo de tiempo
       recibido = 1;
     }
     
     if(recibido == 1){  // plantearse quitarlo
-     estado = alerta;
+      tiempo1 = millis();
+      estado = espera;
     }
+  }
+
+  if(estado == espera){
+    pantalla_clave();
+
+    char input = input_getChar();
+    
+    if(input == '*'){
+      pin = "";
+    }
+
+    else if(input != KEY_NULL && pin.length() < 4){
+      pin += input;
+    }
+
+    else if(input == '#'){
+      if(pin == pin_correcto){
+        pin = "";
+        estado = desbloqueo;
+      }
+
+      else{
+        pin = "";
+        estado = pin_error1;
+      }
+    }
+
+    display.setCursor(32, 18);     // Start at top-left corner
+    display.print(pin[0]);
+    display.setCursor(52, 18);     // Start at top-left corner
+    display.print(pin[1]);
+    display.setCursor(72, 18);     // Start at top-left corner
+    display.print(pin[2]);
+    display.setCursor(92, 18);     // Start at top-left corner
+    display.print(pin[3]);
+
+    display.display();
+
+    tiempo2 = millis();
+    
+    if((tiempo2 - tiempo1) > 30000){
+      pin = "";
+      estado = alerta;
+    }
+  }
+
+  if(estado == pin_error1){
+    pantalla_pin_error();
+    delay(1500);
+    estado = espera;
   }
 
   if(estado == alerta){
@@ -91,7 +151,6 @@ void loop(){
 
     if(input != KEY_NULL){
       estado = clave;
-      pin = "";
       frame = 0;
     }
 
@@ -126,11 +185,13 @@ void loop(){
 
     else if(input == '#'){
       if(pin == pin_correcto){
+        pin = "";
         estado = desbloqueo;
       }
 
       else{
-        estado = pin_error;
+        pin = "";
+        estado = pin_error2;
       }
     }
 
@@ -146,7 +207,7 @@ void loop(){
     display.display();
   } 
 
-  if(estado == pin_error){
+  if(estado == pin_error2){
     pantalla_pin_error();
     delay(1500);
     estado = clave;
@@ -162,8 +223,68 @@ void loop(){
     frame = (frame + 1) % FRAME_COUNT_icono2;
     delay(FRAME_DELAY);
     if(frame == 27){
-      estado = inicio;
+      estado = desactivado;
       frame = 0;
     }
+  }
+
+  if(estado == desactivado){
+    pantalla_desactivada();
+
+    char input = input_getChar();
+
+    if(input != KEY_NULL){
+      estado = activacion;
+      pin = "";
+    }
+
+    UID = leer_UID();
+
+    if(UID == UID_valido){
+      estado = inicio;
+    }
+  }
+
+  if(estado == activacion){
+    pantalla_clave();
+
+    char input = input_getChar();
+    
+    if(input == '*'){
+      pin = "";
+    }
+
+    else if(input != KEY_NULL && pin.length() < 4){
+      pin += input;
+    }
+
+    else if(input == '#'){
+      if(pin == pin_correcto){
+        pin = "";
+        estado = inicio;
+      }
+
+      else{
+        pin = "";
+        estado = pin_error3;
+      }
+    }
+
+    display.setCursor(32, 18);     // Start at top-left corner
+    display.print(pin[0]);
+    display.setCursor(52, 18);     // Start at top-left corner
+    display.print(pin[1]);
+    display.setCursor(72, 18);     // Start at top-left corner
+    display.print(pin[2]);
+    display.setCursor(92, 18);     // Start at top-left corner
+    display.print(pin[3]);
+
+    display.display();
+  }
+
+  if(estado == pin_error3){
+    pantalla_pin_error();
+    delay(1500);
+    estado = activacion;
   }
 }
