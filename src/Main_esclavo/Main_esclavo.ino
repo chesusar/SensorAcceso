@@ -1,11 +1,11 @@
 #include "Comunicacion.h"
 
-#define BUTTON_PIN_BITMASK 0x200008000 // 2^33 + 2^15 en hex 
+#define BUTTON_PIN_BITMASK 0x200008000 // 2^33 + 2^16 en hex 
 
 uint8_t slaveAddress[] = {0x24, 0x0A, 0xC4, 0xC5, 0xDD, 0x48};  // alarma COM 11
 
-// Sensor_puerta => pin 33
-// Sensor_pir => pin 15
+// Sensor_puerta => pin 16
+// Sensor_pir => pin 33
 
 RTC_DATA_ATTR int bootCount = 0;
 
