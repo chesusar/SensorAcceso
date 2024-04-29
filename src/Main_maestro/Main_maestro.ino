@@ -40,17 +40,17 @@ int tiempo4 = 0;
 
 ////Estados////
 int estado = 0;
-int inicio = 0;
-int espera1 = 1;
-int pin_error1 = 2;
-int alerta = 3;
-int clave = 4;
-int pin_error2 = 5;
-int desbloqueo = 6;
-int desactivado = 7;
-int activacion = 8;
-int pin_error3 = 9;
-int espera2 = 10;
+const int ST_INICIO = 0;
+const int ST_ESPERA = 1;
+const int ST_PIN_ERROR = 2;
+const int ST_ALERTA = 3;
+const int ST_CLAVE = 4;
+const int ST_PIN_ERROR_2 = 5;
+const int ST_DESBLOQUEO = 6;
+const int ST_DESACTIVADO = 7;
+const int ST_ACTIVACION = 8;
+const int ST_PIN_ERROR_3 = 9;
+const int ST_ESPERA_2 = 10;
 
 int tiempo5 = 0;  // borrar en la version final
 int tiempo6 = 0;  // borrar en la version final
@@ -79,17 +79,17 @@ void setup() {
 
 void loop() {
 
-  if (estado == inicio) {
+  if (estado == ST_INICIO) {
     pantalla_inicio();
     tiempo6 = millis();  // borrar en la version final
 
     if ((tiempo6 - tiempo5) > 10000) {  // cambiar por callback
       tiempo1 = millis();
-      estado = espera1;
+      estado = ST_ESPERA;
     }
   }
 
-  if (estado == espera1) {
+  if (estado == ST_ESPERA) {
     pantalla_clave();
 
     char input = input_getChar();
@@ -105,19 +105,19 @@ void loop() {
     else if (input == '#') {
       if (pin == pin_correcto) {
         pin = "";
-        estado = desbloqueo;
+        estado = ST_DESBLOQUEO;
       }
 
       else {
         pin = "";
-        estado = pin_error1;
+        estado = ST_PIN_ERROR;
       }
     }
 
     UID = leer_UID();
 
     if (UID == UID_valido) {
-      estado = desbloqueo;
+      estado = ST_DESBLOQUEO;
       frame = 0;
     }
 
@@ -136,18 +136,18 @@ void loop() {
 
     if ((tiempo2 - tiempo1) > 30000) {
       pin = "";
-      estado = alerta;
+      estado = ST_ALERTA;
     }
   }
 
-  if (estado == pin_error1) {
+  if (estado == ST_PIN_ERROR) {
     pantalla_pin_error();
     delay(1500);
     tiempo1 = millis();
-    estado = espera1;
+    estado = ST_ESPERA;
   }
 
-  if (estado == alerta) {
+  if (estado == ST_ALERTA) {
     recibido = 0;
 
     display.clearDisplay();
@@ -159,14 +159,14 @@ void loop() {
     char input = input_getChar();
 
     if (input != KEY_NULL) {
-      estado = clave;
+      estado = ST_CLAVE;
       frame = 0;
     }
 
     UID = leer_UID();
 
     if (UID == UID_valido) {
-      estado = desbloqueo;
+      estado = ST_DESBLOQUEO;
       frame = 0;
     }
 
@@ -178,7 +178,7 @@ void loop() {
     }
   }
 
-  if (estado == clave) {
+  if (estado == ST_CLAVE) {
     pantalla_clave();
 
     char input = input_getChar();
@@ -194,19 +194,19 @@ void loop() {
     else if (input == '#') {
       if (pin == pin_correcto) {
         pin = "";
-        estado = desbloqueo;
+        estado = ST_DESBLOQUEO;
       }
 
       else {
         pin = "";
-        estado = pin_error2;
+        estado = ST_PIN_ERROR_2;
       }
     }
 
     UID = leer_UID();
 
     if (UID == UID_valido) {
-      estado = desbloqueo;
+      estado = ST_DESBLOQUEO;
       frame = 0;
     }
 
@@ -222,13 +222,13 @@ void loop() {
     display.display();
   }
 
-  if (estado == pin_error2) {
+  if (estado == ST_PIN_ERROR_2) {
     pantalla_pin_error();
     delay(1500);
-    estado = clave;
+    estado = ST_CLAVE;
   }
 
-  if (estado == desbloqueo) {
+  if (estado == ST_DESBLOQUEO) {
     Desactivar_alarma();
     activa = 0;
 
@@ -238,18 +238,18 @@ void loop() {
     frame = (frame + 1) % FRAME_COUNT_icono2;
     delay(FRAME_DELAY);
     if (frame == 27) {
-      estado = desactivado;
+      estado = ST_DESACTIVADO;
       frame = 0;
     }
   }
 
-  if (estado == desactivado) {
+  if (estado == ST_DESACTIVADO) {
     pantalla_desactivada();
 
     char input = input_getChar();
 
     if (input != KEY_NULL) {
-      estado = activacion;
+      estado = ST_ACTIVACION;
       pin = "";
     }
 
@@ -257,11 +257,11 @@ void loop() {
 
     if (UID == UID_valido) {
       tiempo3 = millis();
-      estado = espera2;
+      estado = ST_ESPERA_2;
     }
   }
 
-  if (estado == activacion) {
+  if (estado == ST_ACTIVACION) {
     pantalla_clave();
 
     char input = input_getChar();
@@ -278,12 +278,12 @@ void loop() {
       if (pin == pin_correcto) {
         pin = "";
         tiempo3 = millis();
-        estado = espera2;
+        estado = ST_ESPERA_2;
       }
 
       else {
         pin = "";
-        estado = pin_error3;
+        estado = ST_PIN_ERROR_3;
       }
     }
 
@@ -291,7 +291,7 @@ void loop() {
 
     if (UID == UID_valido) {
       tiempo3 = millis();
-      estado = espera2;
+      estado = ST_ESPERA_2;
     }
 
     display.setCursor(32, 32);  // Start at top-left corner
@@ -306,18 +306,18 @@ void loop() {
     display.display();
   }
 
-  if (estado == pin_error3) {
+  if (estado == ST_PIN_ERROR_3) {
     pantalla_pin_error();
     delay(1500);
-    estado = activacion;
+    estado = ST_ACTIVACION;
   }
 
-  if (estado == espera2) {
+  if (estado == ST_ESPERA_2) {
     tiempo4 = millis();
     pantalla_activando();
 
     if ((tiempo4 - tiempo3) > 60000) {
-      estado = inicio;
+      estado = ST_INICIO;
     }
   }
 }
