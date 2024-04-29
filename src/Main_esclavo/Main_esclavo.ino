@@ -22,7 +22,7 @@ void setup() {
 
   if (bootCount > 0) {
     Serial.println("BootCount > 0");
-    communication_init(slaveAddress);
+    communication_init(slaveAddress,muerto);
     delay(100);
     Serial.println("Comunicacion establecida");
 
@@ -52,4 +52,7 @@ void setup() {
 
 void loop() {
   // Esto no se lee
+}
+
+void muerto(){
 }
