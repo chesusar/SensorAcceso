@@ -8,7 +8,7 @@
 static uint8_t columns[4];
 static uint8_t rows[4];
 static char keys[] = "123A456B789C*0#D";
-uint8_t rowPins[] = {25, 33, 32, 35};
+uint8_t rowPins[] = {33, 32, 35, 34};
 uint8_t columnPins[] = {12, 14, 27, 26};
 
 /**

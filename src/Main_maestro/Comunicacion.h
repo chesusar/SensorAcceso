@@ -2,6 +2,7 @@
 #define COMMUNICATION_H
 
 #include <WiFi.h>
+#include <Arduino.h>
 #include <esp_now.h>
 #include <stdint.h>
 #include <cstdlib>
@@ -38,7 +39,7 @@ bool communication_isHost(){
  * @brief Inits communication server
  * @param slaveAddress slave address to use in host mode, NULL to use as slave
  */
-void communication_init(uint8_t *slaveAddress){
+void communication_init(uint8_t *slaveAddress, void (*callback)()){
   if (slaveAddress == NULL){
     isHost = false;
   }

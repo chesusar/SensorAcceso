@@ -52,18 +52,6 @@ int activacion = 8;
 int pin_error3 = 9;
 int espera2 = 10;
 
-const int ST_INICIO = 0;
-const int ST_ESPERA = 1;
-const int ST_PIN_ERROR_1 = 2;
-const int ST_ALERTA = 3;
-const int ST_CLAVE = 4;
-const int ST_PIN_ERROR_2 = 5;
-const int ST_DESBLOQUEO = 6;
-const int ST_DESACTIVADO = 7;
-const int ST_ACTIVACION = 8;
-const int ST_PIN_ERROR_3 = 9;
-const int ST_ESPERA_2 = 10;
-
 int tiempo5 = 0;  // borrar en la version final
 int tiempo6 = 0;  // borrar en la version final
 
@@ -83,10 +71,10 @@ void setup() {
   WiFi.mode(WIFI_MODE_STA);
   Serial.println("Iniciando wifi");
   Serial.println(WiFi.macAddress());
-  communication_init(NULL);
-
-
+  communication_init(NULL, muerto);
+  
   tiempo5 = millis();  // borrar en la version final
+  
 }
 
 void loop() {
@@ -95,12 +83,7 @@ void loop() {
     pantalla_inicio();
     tiempo6 = millis();  // borrar en la version final
 
-
-    if ((tiempo6 - tiempo5) > 10000) {  // poner recibir mensaje alerta // quitar calculo de tiempo
-      recibido = 1;
-    }
-
-    if (recibido == 1) {  // plantearse quitarlo
+    if ((tiempo6 - tiempo5) > 10000) {  // cambiar por callback
       tiempo1 = millis();
       estado = espera1;
     }
@@ -131,6 +114,13 @@ void loop() {
       }
     }
 
+    UID = leer_UID();
+
+    if (UID == UID_valido) {
+      estado = desbloqueo;
+      frame = 0;
+    }
+
     display.setCursor(32, 32);  // Start at top-left corner
     display.print(pin[0]);
     display.setCursor(52, 32);  // Start at top-left corner
@@ -153,6 +143,7 @@ void loop() {
   if (estado == pin_error1) {
     pantalla_pin_error();
     delay(1500);
+    tiempo1 = millis();
     estado = espera1;
   }
 
@@ -212,6 +203,13 @@ void loop() {
       }
     }
 
+    UID = leer_UID();
+
+    if (UID == UID_valido) {
+      estado = desbloqueo;
+      frame = 0;
+    }
+
     display.setCursor(32, 32);  // Start at top-left corner
     display.print(pin[0]);
     display.setCursor(52, 32);  // Start at top-left corner
@@ -258,6 +256,7 @@ void loop() {
     UID = leer_UID();
 
     if (UID == UID_valido) {
+      tiempo3 = millis();
       estado = espera2;
     }
   }
@@ -278,6 +277,7 @@ void loop() {
     else if (input == '#') {
       if (pin == pin_correcto) {
         pin = "";
+        tiempo3 = millis();
         estado = espera2;
       }
 
@@ -287,13 +287,20 @@ void loop() {
       }
     }
 
-    display.setCursor(32, 18);  // Start at top-left corner
+    UID = leer_UID();
+
+    if (UID == UID_valido) {
+      tiempo3 = millis();
+      estado = espera2;
+    }
+
+    display.setCursor(32, 32);  // Start at top-left corner
     display.print(pin[0]);
-    display.setCursor(52, 18);  // Start at top-left corner
+    display.setCursor(52, 32);  // Start at top-left corner
     display.print(pin[1]);
-    display.setCursor(72, 18);  // Start at top-left corner
+    display.setCursor(72, 32);  // Start at top-left corner
     display.print(pin[2]);
-    display.setCursor(92, 18);  // Start at top-left corner
+    display.setCursor(92, 32);  // Start at top-left corner
     display.print(pin[3]);
 
     display.display();
@@ -306,11 +313,14 @@ void loop() {
   }
 
   if (estado == espera2) {
-    tiempo6 = millis();
+    tiempo4 = millis();
     pantalla_activando();
 
     if ((tiempo4 - tiempo3) > 60000) {
       estado = inicio;
     }
   }
+}
+
+void muerto(){
 }
