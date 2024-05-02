@@ -1,5 +1,5 @@
 #include "DFRobotDFPlayerMini.h"
-HardwareSerial mySoftwareSerial(1);
+HardwareSerial mySoftwareSerial(2);
 DFRobotDFPlayerMini myDFPlayer;
 
 
