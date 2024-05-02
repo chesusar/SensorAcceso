@@ -34,7 +34,9 @@ int tiempo3 = 0;
 int tiempo4 = 0;
 
 ////Instancias MQTT////
-String receivedValue = "5";
+String receivedValue = "9";
+int envio_anterior = 99;
+int activa = 9;
 AdafruitIO_WiFi io(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASS);
 EspMQTTClient client(WIFI_SSID, WIFI_PASS, "io.adafruit.com", IO_USERNAME, IO_KEY, "TestClient", 1883);
 
@@ -83,7 +85,10 @@ void setup() {
   Serial.println();
   Serial.println("Conectado a Adafruit IO");
   client.enableDebuggingMessages();
-  client.loop();
+  io.run();
+  io.feed("estado")->save(0);
+  io.run();
+  io.feed("alarma")->save(0);
 
   ////DFplayer////
   pinMode(altavoz, OUTPUT);
@@ -93,12 +98,15 @@ void setup() {
 }
 
 void loop() {
-  io.run();
 
   if (estado == ST_INICIO) {
     pantalla_inicio();
-
-    io.feed("estado")->save(0);
+    
+    if (envio_anterior != estado){
+      io.run();
+      io.feed("estado")->save(0);
+      envio_anterior = estado;
+    }
 
     tiempo6 = millis();  // borrar en la version final
 
@@ -107,8 +115,11 @@ void loop() {
       estado = ST_ESPERA;
     }
 
+    client.loop();
     if (receivedValue == "1"){
-      receivedValue = "5";
+      receivedValue = "9";
+      envio_anterior = 99;
+      activa = 9;
       estado = ST_ALERTA;
     }
   }
@@ -116,7 +127,11 @@ void loop() {
   if (estado == ST_ESPERA) {
     pantalla_clave();
 
-    io.feed("estado")->save(1);
+    if (envio_anterior != estado){
+      io.run();
+      io.feed("estado")->save(1);
+      envio_anterior = estado;
+    }
 
     char input = input_getChar();
 
@@ -141,9 +156,12 @@ void loop() {
     }
 
     UID = leer_UID();
+    client.loop();
 
     if (UID == UID_valido || receivedValue == "0") {
-      receivedValue = "5";
+      receivedValue = "9";
+      envio_anterior = 99;
+      activa = 9;
       estado = ST_DESBLOQUEO;
       frame = 0;
     }
@@ -170,7 +188,11 @@ void loop() {
   if (estado == ST_PIN_ERROR) {
     pantalla_pin_error();
 
-    io.feed("estado")->save(2);
+    if (envio_anterior != estado){
+      io.run();
+      io.feed("estado")->save(2);
+      envio_anterior = estado;
+    }
 
     delay(1500);
     tiempo1 = millis();
@@ -180,10 +202,18 @@ void loop() {
   if (estado == ST_ALERTA) {
     recibido = 0;
 
-    io.feed("alarma")->save(1);
-    digitalWrite(altavoz, HIGH);
-
-    io.feed("estado")->save(3);
+    if (activa != 1){
+      io.run();
+      io.feed("alarma")->save(1);
+      digitalWrite(altavoz, HIGH);
+      activa = 1;
+    }
+    
+    if (envio_anterior != estado){
+      io.run();
+      io.feed("estado")->save(3);
+      envio_anterior = estado;
+    }
 
     display.clearDisplay();
     display.drawBitmap(32, 0, icono1[frame], FRAME_WIDTH, FRAME_HEIGHT, 1);
@@ -199,9 +229,12 @@ void loop() {
     }
 
     UID = leer_UID();
+    client.loop();
 
     if (UID == UID_valido || receivedValue == "0") {
-      receivedValue = "5";
+      receivedValue = "9";
+      envio_anterior = 99;
+      activa = 9;
       estado = ST_DESBLOQUEO;
       frame = 0;
     }
@@ -210,7 +243,11 @@ void loop() {
   if (estado == ST_CLAVE) {
     pantalla_clave();
 
-    io.feed("estado")->save(4);
+    if (envio_anterior != estado){
+      io.run();
+      io.feed("estado")->save(4);
+      envio_anterior = estado;
+    }
 
     char input = input_getChar();
 
@@ -235,9 +272,12 @@ void loop() {
     }
 
     UID = leer_UID();
+    client.loop();
 
     if (UID == UID_valido || receivedValue == "0") {
-      receivedValue = "5";
+      receivedValue = "9";
+      envio_anterior = 99;
+      activa = 9;
       estado = ST_DESBLOQUEO;
       frame = 0;
     }
@@ -257,17 +297,31 @@ void loop() {
   if (estado == ST_PIN_ERROR_2) {
     pantalla_pin_error();
 
-    io.feed("estado")->save(5);
+    if (envio_anterior != estado){
+      io.run();
+      io.feed("estado")->save(5);
+      envio_anterior = estado;
+    }
 
     delay(1500);
     estado = ST_CLAVE;
   }
 
   if (estado == ST_DESBLOQUEO) {
-    io.feed("alarma")->save(0);
-    digitalWrite(altavoz, LOW);
 
-    io.feed("estado")->save(6);
+
+    if (activa != 0){
+      io.run();
+      io.feed("alarma")->save(0);
+      digitalWrite(altavoz, LOW);
+      activa = 0;
+    }
+
+    if (envio_anterior != estado){
+      io.run();
+      io.feed("estado")->save(6);
+      envio_anterior = estado;
+    }
 
     display.clearDisplay();
     display.drawBitmap(32, 0, icono2[frame], FRAME_WIDTH, FRAME_HEIGHT, 1);
@@ -283,7 +337,11 @@ void loop() {
   if (estado == ST_DESACTIVADO) {
     pantalla_desactivada();
 
-    io.feed("estado")->save(7);
+    if (envio_anterior != estado){
+      io.run();
+      io.feed("estado")->save(7);
+      envio_anterior = estado;
+    }
 
     char input = input_getChar();
 
@@ -299,8 +357,12 @@ void loop() {
       estado = ST_ESPERA_2;
     }
 
+    client.loop();
+
     if (receivedValue == "1"){
-      receivedValue = "5";
+      receivedValue = "9";
+      envio_anterior = 99;
+      activa = 9;
       estado = ST_ALERTA;
     }
   }
@@ -308,7 +370,11 @@ void loop() {
   if (estado == ST_ACTIVACION) {
     pantalla_clave();
 
-    io.feed("estado")->save(8);
+    if (envio_anterior != estado){
+      io.run();
+      io.feed("estado")->save(8);
+      envio_anterior = estado;
+    }
 
     char input = input_getChar();
 
@@ -340,8 +406,12 @@ void loop() {
       estado = ST_ESPERA_2;
     }
 
+    client.loop();
+
     if (receivedValue == "1"){
-      receivedValue = "5";
+      receivedValue = "9";
+      envio_anterior = 99;
+      activa = 9;
       estado = ST_ALERTA;
     }
 
@@ -360,7 +430,11 @@ void loop() {
   if (estado == ST_PIN_ERROR_3) {
     pantalla_pin_error();
 
-    io.feed("estado")->save(9);
+    if (envio_anterior != estado){
+      io.run();
+      io.feed("estado")->save(9);
+      envio_anterior = estado;
+    }
 
     delay(1500);
     estado = ST_ACTIVACION;
@@ -371,7 +445,11 @@ void loop() {
 
     pantalla_activando();
 
-    io.feed("estado")->save(10);
+    if (envio_anterior != estado){
+      io.run();
+      io.feed("estado")->save(10);
+      envio_anterior = estado;
+    }
 
     if ((tiempo4 - tiempo3) > 60000) {
       estado = ST_INICIO;
@@ -385,4 +463,9 @@ void muerto(){
 void onConnectionEstablished() {
   Serial.println("Conexión establecida");
   client.subscribe(FEED, [](const String &feed, const String &value) {receivedValue = value;});
+
+  if (receivedValue == "1" || receivedValue == "0"){
+    io.run();
+    io.feed("orden")->save(9);
+  }
 }
