@@ -15,13 +15,13 @@ void Config_alarma(){
 }
 
 void Activar_alarma(){
-  myDFPlayer.playFolder(1, 1);  // Reproducir mp3 SD:/02/001.mp3; Nombre de la carpeta (1~99); Nombre del archivo (1~255) 
+  myDFPlayer.playFolder(2, 1);  // Reproducir mp3 SD:/02/001.mp3; Nombre de la carpeta (1~99); Nombre del archivo (1~255) 
 }
 
 void Bucle_alarma(){
   if (myDFPlayer.available()){
     if (myDFPlayer.readType() == DFPlayerPlayFinished){
-      myDFPlayer.playFolder(1, 1);
+      myDFPlayer.playFolder(2, 1);
     }
   }
 }
