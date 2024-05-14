@@ -7,17 +7,19 @@
 #include <stdint.h>
 #include <cstdlib>
 
+typedef struct message{
+  uint32_t time;
+  uint8_t type;
+  char message[100];
+} message;
+
 static bool serverCommunication = false;
 static bool isHost = false;
 
 static void onSent(const uint8_t *mac_addr, esp_now_send_status_t status);
 static void onReceived(const uint8_t *mac_addr, const uint8_t *data, int data_len);
 
-typedef struct message{
-  uint32_t time;
-  uint8_t type;
-  char message[100];
-} message;
+static void (*callbackFunction)(message m);
 
 /**
  * @brief Is communication server active
@@ -39,7 +41,10 @@ bool communication_isHost(){
  * @brief Inits communication server
  * @param slaveAddress slave address to use in host mode, NULL to use as slave
  */
-void communication_init(uint8_t *slaveAddress, void (*callback)()){
+void communication_init(uint8_t *slaveAddress, void (*callback)(message)){
+  
+  callbackFunction = callback;
+
   if (slaveAddress == NULL){
     isHost = false;
   }
@@ -109,6 +114,8 @@ static void onReceived(const uint8_t *mac_addr, const uint8_t *data, int data_le
   Serial.print(m.type);
   Serial.print(" ");
   Serial.println(String(m.message));
+
+  callbackFunction(m);
 }
 
 #endif
