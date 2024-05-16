@@ -24,6 +24,7 @@ String pin = "";
 String pin_correcto = "9876";
 
 ////Instancias comunicacion////
+
 int mensaje = 39;
 int recibido = 0;
 int tiempo1 = 0;

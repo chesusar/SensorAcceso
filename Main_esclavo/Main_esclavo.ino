@@ -45,7 +45,7 @@ void setup() {
   //esp_sleep_enable_ext0_wakeup(GPIO_NUM_33,1); //1 = High, 0 = Low
   esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK, ESP_EXT1_WAKEUP_ANY_HIGH);
   
-  delay(5000); //Para pruebas
+  delay(5000);
   esp_deep_sleep_start();
 
   // Esto no se lee
