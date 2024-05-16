@@ -40,6 +40,8 @@ def capturar_cara():
             break
         elif k == ord("c"):
             if cara_detectada:
+                if not os.path.exists(BASE_DIR + "dataset"):
+                    os.makedirs(BASE_DIR + "dataset")
                 cv2.imwrite(
                     BASE_DIR + "dataset/User_" + USER + "_" + str(captures_count) + ".jpg",
                     roi_gray,
