@@ -9,7 +9,7 @@ void Config_alarma(){
   mySoftwareSerial.begin(9600, SERIAL_8N1, 16, 17);  // speed, type, RX, TX  16 17
   myDFPlayer.begin(mySoftwareSerial);  //Use softwareSerial to communicate with mp3.
   myDFPlayer.setTimeOut(500); //Set serial communictaion time out 500ms
-  myDFPlayer.volume(15); // Volumen (0~30).
+  myDFPlayer.volume(20); // Volumen (0~30).
   myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);  // Ecualizador
   myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);  // Lector de SD
 }
