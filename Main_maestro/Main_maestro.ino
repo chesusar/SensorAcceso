@@ -9,9 +9,6 @@
 ////Librerias keypad////
 #include "Keypad.h"
 
-////Librerias comunicacion////
-#include "Comunicacion.h"
-
 ////Librerias MQTT////
 #include "MQTT.h"
 
@@ -27,6 +24,8 @@ String pin = "";
 String pin_correcto = "9876";
 
 ////Instancias comunicacion////
+
+int mensaje = 39;
 int recibido = 0;
 int tiempo1 = 0;
 int tiempo2 = 0;
@@ -69,11 +68,6 @@ void setup() {
   ////Configuracion keypad////
   Config_keypad(columnPins, rowPins);
   Serial.println("3");
-  ////Configuracion Comunicacion////
-  WiFi.mode(WIFI_MODE_STA);
-  Serial.println("Iniciando wifi");
-  Serial.println(WiFi.macAddress());
-  communication_init(NULL, muerto);
 
   ////MQTT////
   Serial.print("Conectando a Adafruit IO");
@@ -90,11 +84,11 @@ void setup() {
   io.run();
   io.feed("alarma")->save(0);
 
-  ////DFplayer////
-  pinMode(altavoz, OUTPUT);
+  ////Configuracion Comunicacion////
+  pinMode(mensaje, INPUT);
 
-  tiempo5 = millis();  // borrar en la version final
-  
+  ////DFplayer////
+  pinMode(altavoz, OUTPUT); 
 }
 
 void loop() {
@@ -108,9 +102,7 @@ void loop() {
       envio_anterior = estado;
     }
 
-    tiempo6 = millis();  // borrar en la version final
-
-    if ((tiempo6 - tiempo5) > 10000) {  // cambiar por callback
+    if (digitalRead(mensaje) == HIGH) {
       tiempo1 = millis();
       estado = ST_ESPERA;
     }
@@ -455,9 +447,6 @@ void loop() {
       estado = ST_INICIO;
     }
   }
-}
-
-void muerto(){
 }
 
 void onConnectionEstablished() {
