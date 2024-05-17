@@ -1,0 +1,3 @@
+# MQTT io adafruit
+ADAFRUIT_IO_KEY = ''
+ADAFRUIT_IO_USERNAME = ''

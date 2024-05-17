@@ -4,10 +4,10 @@ import customtkinter
 import sys
 from Adafruit_IO import MQTTClient  # pip install adafruit-io
 import time
+from credenciales import ADAFRUIT_IO_KEY
+from credenciales import ADAFRUIT_IO_USERNAME
 
-# MQTT io adafruit
-ADAFRUIT_IO_KEY = ''
-ADAFRUIT_IO_USERNAME = 'Rarribas'
+
 FEED_ID = 'alarma'
 FEED_ID2 = 'estado'
 alarma = 0

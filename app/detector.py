@@ -1,6 +1,15 @@
 import cv2
 import numpy as np
 import os
+from Adafruit_IO import MQTTClient
+from credenciales import ADAFRUIT_IO_KEY
+from credenciales import ADAFRUIT_IO_USERNAME
+import time
+
+
+ORDEN_USUARIO = 0
+TIEMPO_MINIMO_MQTT = 15
+
 
 BASE_DIR = "app/"
 
@@ -22,6 +31,15 @@ def detect():
     # Define min window size to be recognized as a face
     minW = 0.1 * cam.get(3)
     minH = 0.1 * cam.get(4)
+
+    # Create an MQTT client instance.
+    client = MQTTClient(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY)
+
+    # Connect to the Adafruit IO server.
+    client.connect()
+    client.loop_background()
+
+    tiempo_ultimo_mqtt = 0
 
     while True:
         ret, img = cam.read()
@@ -47,13 +65,20 @@ def detect():
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 id = names[id]
                 confidence = "  {0}%".format(round(100 - confidence))
+                if time.time() - tiempo_ultimo_mqtt > TIEMPO_MINIMO_MQTT:
+                    enviar_mqtt(client=client, orden=ORDEN_USUARIO)
+                    tiempo_ultimo_mqtt = time.time()
+
             else:
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
                 id = "Intruso"
                 confidence = "  {0}%".format(round(100 - confidence))
+                # if time.time() - tiempo_ultimo_mqtt > TIEMPO_MINIMO_MQTT:
+                #     enviar_mqtt(client=client, orden=ORDEN_INTRUSO)
+                #     tiempo_ultimo_mqtt = time.time()
 
             cv2.putText(img, str(id), (x + 5, y - 5), font, 1, (255, 255, 255), 2)
-            cv2.putText(img, str(confidence), (x + 5, y + h - 5), font, 1, (255, 255, 0), 1)
+            # cv2.putText(img, str(confidence), (x + 5, y + h - 5), font, 1, (255, 255, 0), 1)
 
         cv2.imshow("Detecctor", img)
 
@@ -63,6 +88,10 @@ def detect():
 
     cam.release()
     cv2.destroyAllWindows()
+
+
+def enviar_mqtt(client, orden):
+    client.publish("orden", orden)
 
 
 detect()
